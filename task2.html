@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Задача 2</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=800, initial-scale=1">
+   <style>
+		#app{
+			margin: 20px auto;
+			width: 800px;
+		}
+		table, table td, table th{
+			text-align: center;
+			border: 1px solid gray;
+		}
+		table td:hover{
+			background-color: lightgray;
+		}
+		.date.month{
+			max-width: 15px;
+		}
+		.date.year{
+			max-width: 30px;
+		}
+		.calendar{
+			width: 50px;
+			background-color: #f5f2f0; 
+			text-align:center;
+		}
+		.calendar .elem{
+			border-top: 1px solid black;
+			border-left: 1px solid black;
+			border-right: 1px solid black;
+		}
+		.calendar .elem:nth-last-child(1){
+			border-bottom: 1px solid black;
+		}
+		.calendar .elem:hover{
+			background-color: #42b983;
+		}
+		.calendar .elem:nth-child(1){
+			background-color: #e7e5e3 !important;
+		}
+		.calendar .elem a{
+			display: block;
+			text-decoration: none;
+			color: black;
+		}
+		.calendar{
+			float: left;
+			margin-bottom: 100px;
+		}
+		.tasks{
+			float: left;
+			margin-left: 30px;
+			width: 720px;
+			text-align: center;
+		}
+		.tasks textarea.addTask{
+			width: 700px;
+			max-width: 700px;
+			margin: 0 auto 20px auto;
+		}
+		.tasks h1{
+			margin-top: 0;
+		}
+		.item{
+			width: 100%;
+			outline: 1px dashed #bdbdcb;
+			display: flex;
+			justify-content: center;
+			margin-bottom: 15px;
+		}
+		.item .text{
+			padding:  0 20px;
+			width: 85%;
+		}
+		.item .text textarea{
+			width: 100%;
+			max-width: 480px;
+			padding: 5px;
+		}
+		.note{
+			margin-top: 0px;
+			margin-bottom: 5px;
+			font-size:12px;
+		}
+		.text textarea{
+			margin-top: 10px;
+		}
+		.item .checkbox{
+			text-align: center;
+			padding: 20px;
+			width: 5%;
+		}
+		.item .delItem{
+			text-align: center;
+			padding: 20px;
+			width: 10%;
+			border-left: 1px dashed #bdbdcb;
+		}
+   </style>
+ </head>
+ <body>
+			<div id="app">
+				{{ addAllDays(31) }}
+				<p>Реализуйте органайзер. Он будет представлять собой календарь. По нажатию 
+				на любую дату с боку календаря должен появится список дел, запланированных на 
+				эту дату. Дела можно добавлять, удалять, редактировать, помечать сделанными.</p>
+				<br>
+				<div class="calendar">
+					<div class="elem">
+						Янв
+					</div>
+					<div class="elem" v-for="elem, index in calendar">
+						<a href="#" v-on:click.prevent="showDay(index)">{{ elem.day }}</a>
+					</div>
+				</div>
+				<div class="tasks" v-if="anyShow">
+					<h1>День {{ calendar[activeDayNum].day }}</h1>
+					
+					<div class="item" v-bind:style="elem.done ? { backgroundColor: '#a5eba3' } : { backgroundColor: '#fafafa' }" v-for="elem, taskIndex in calendar[activeDayNum].tasks">
+						<div class="text" v-on:click="elem.editNow = true">
+							<p v-bind:style="elem.done ? { textDecoration: 'line-through' } : { textDecoration: 'none' }" v-if="!elem.editNow">{{ elem.taskName }}</p>
+							<textarea v-if="elem.editNow" v-on:keyup.esc="editTask(activeDayNum,taskIndex,false)" v-on:keyup.enter="editTask(activeDayNum,taskIndex,true)" v-model="elem.newTask"></textarea>
+							<p v-if="elem.editNow" class="note">Сохранить - enter, отмена - esc</p>
+						</div>
+						<div class="checkbox"><input type="checkbox" v-bind:disabled="elem.done" v-model="elem.done"></div>
+						<div class="delItem"><a href="#" v-on:click.prevent="delTask(activeDayNum,taskIndex)">удалить</a></div>
+					</div>
+					
+					<textarea class="addTask" v-on:keyup.enter="addTask(activeDayNum, newTask)" v-model="newTask"></textarea><br>
+					<button v-on:click="addTask(activeDayNum, newTask)" v-bind:disabled="newTask == ''">Добавить задачу</button>
+				</div>
+			</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	   <script>
+		let app = new Vue({
+			el: '#app',
+			data: {
+				calendar: [],
+				doneCalendar: false,
+				anyShow: false,
+				activeDayNum: 0,
+				newTask: '',
+			},
+			methods: {
+				addDay: function(dayNum){
+					item = {
+						day: dayNum,
+						show: false,
+						tasks: [],
+					}
+					this.calendar.push(item);
+				},
+				addTask: function(dayNum, taskName){
+					if(this.newTask.match(/^\s*$/) == null){
+							item = {
+							taskName: taskName,
+							done: false,
+							editNow: false,
+							newTask: taskName,
+						}
+						this.calendar[dayNum].tasks.push(item);
+						this.newTask = '';
+					}
+				},
+				addAllDays: function(num){
+					if(!this.doneCalendar){
+						for(i=1; i<=num; i++){
+							this.addDay(i); 
+						}
+					}
+					this.doneCalendar = true;
+				},
+				showDay: function(index){
+					if(!this.anyShow){
+						this.calendar[index].show = true;
+						this.activeDayNum = index;
+						this.anyShow = true;
+					}
+					else{
+						this.calendar[this.activeDayNum].show = false;
+						this.calendar[index].show = true;
+						this.activeDayNum = index;
+					}
+				},
+				editTask: function(index,taskIndex,change){
+					if(change){
+						this.calendar[index].tasks[taskIndex].taskName = this.calendar[index].tasks[taskIndex].newTask;
+						this.calendar[index].tasks[taskIndex].editNow = false;
+					}
+					else{
+						this.calendar[index].tasks[taskIndex].newTask = this.calendar[index].tasks[taskIndex].taskName;
+						this.calendar[index].tasks[taskIndex].editNow = false;
+					}
+				},
+				delTask: function(index,taskIndex){
+					this.calendar[index].tasks.splice(taskIndex, 1);
+				}
+			}
+		});
+   </script>
+   
+ </body> 
+</html>

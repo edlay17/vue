@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Задача 4</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=800, initial-scale=1">
+   <style>
+		#app{
+			margin: 20px auto;
+			width: 1200px;
+		}
+   </style>
+ </head>
+ <body>
+			<div id="app">
+				<p> Реализуйте тест. Покажите все вопросы на экране, а под каждым вопросом выведите инпут для ввода правильного ответа.</p>
+				<p>Пусть пользователь вбивает свой ответ в инпут и нажимает на Enter. Сразу же проверьте ответ пользователя на данный вопрос. 
+				Выведите возле инпута сообщение о правильности или неправильности ответа. Кроме того, покрасьте фон инпута в красный цвет, 
+				если дан неправильный ответ, и в зеленый - если дан правильный.</p>
+				<p>Ответы "аМПер", " Ампер", " АМПЕР " - все правильные.</p>
+				<br>
+				<p v-for="elem, index in questions">
+					<b>{{ elem.question }}</b><br>
+					<span v-if="elem.color == 'green'" style="color: green;">Правильный ответ!</span>
+					<span v-if="elem.color == 'red'" style="color: red;">Неправильный ответ!</span>
+					Ответ: <input v-bind:style="{backgroundColor: elem.color}" v-model.trim="elem.userAnswer" v-on:keyup.enter="checkAnsewer(index,elem.userAnswer)" v-on:input="delColor(index)" type="text"> 
+				</p>
+			</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	   <script>
+		let app = new Vue({
+			el: '#app',
+			data: {
+				questions: [
+					{
+						question: 'Единица измерения силы тока? (Ампер)',
+						answer: 'Ампер',
+						userAnswer: '',
+						color: 'white'
+					},
+					{
+						question: 'Как называется процесс поглощения углекислого газа и выделения кислорода растениями на свету? (Фотосинтез)',
+						answer: 'Фотосинтез',
+						userAnswer: '',
+						color: 'white'
+					},
+					{
+						question: 'Какое насекомое считается самым сильным? (Навозный жук)',
+						answer: 'Навозный жук',
+						userAnswer: '',
+						color: 'white'
+					},
+				],
+			},
+			methods: {
+				checkAnsewer: function(quesIndex, answer){
+					if(this.questions[quesIndex].answer.toLowerCase() == answer.toLowerCase()){
+						this.questions[quesIndex].color = 'green';
+					}
+					else{
+						this.questions[quesIndex].color = 'red';
+					}
+				},
+				delColor: function(index){
+					this.questions[index].color = 'white';
+				}
+			}
+		});
+   </script>
+   
+ </body> 
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Задача 4</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=800, initial-scale=1">
+   <style>
+		#app{
+			margin: 20px auto;
+			width: 1200px;
+		}
+   </style>
+ </head>
+ <body>
+			<div id="app">
+				<p>Реализуйте тест с вопросами и вариантами ответов. Каждый вопрос должен быть в своем абзаце, а под ним - 5 радиокнопочек, с помощью 
+				которых можно выбрать один из ответов. Если ответ правильный - вопрос должен покраситься в зеленый цвет, а если неправильный - в красный. </p>
+				<br>
+				<p v-for="elem, index in questions">
+					<b v-bind:style="{ color: elem.color }">{{ elem.question }}</b><br>
+					<template v-for="answer, index2 in elem.answers">
+						{{ answer }} <input v-bind:style="{backgroundColor: elem.color}" type="radio" v-bind:name="index" v-on:input="checkAnsewer(index, index2+1)"><br>
+					</template>
+				</p>
+			</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	   <script>
+		let app = new Vue({
+			el: '#app',
+			data: {
+				questions: [
+					{
+						question: 'Единица измерения силы тока? (Ампер)',
+						answers: [
+							'Ампер',
+							'Ом',
+							'Вольт',
+							'Метр',
+							'Байт',
+						],
+						rightAnswer: 1,
+						color: 'black'
+					},
+					{
+						question: '7-1=',
+						answers: [
+							'5',
+							'8',
+							'6',
+							'10',
+							'12',
+						],
+						rightAnswer: 3,
+						color: 'black'
+					},
+					{
+						question: '2+7=',
+						answers: [
+							'2',
+							'9',
+							'5',
+							'10',
+							'12',
+						],
+						rightAnswer: 2,
+						color: 'black'
+					},
+				],
+			},
+			methods: {
+				checkAnsewer: function(quesIndex, answer){
+					if(this.questions[quesIndex].rightAnswer == answer){
+						this.questions[quesIndex].color = 'green';
+					}
+					else{
+						this.questions[quesIndex].color = 'red';
+					}
+				},
+			}
+		});
+   </script>
+   
+ </body> 
+</html>

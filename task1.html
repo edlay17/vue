@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Задача 1</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=800, initial-scale=1">
+   <style>
+		#app{
+			margin: 20px auto;
+			width: 800px;
+		}
+		.item{
+			width: 100%;
+			border: 1px solid #bbbbbb;
+			display: flex;
+			justify-content: center;
+		}
+		.item .text{
+			padding:  0 20px;
+			width: 85%;
+		}
+		.item .text textarea{
+			width: 80%;
+			max-width: 400px;
+			padding: 5px;
+		}
+		.note{
+			margin-top: 0px;
+		}
+		.item .checkbox{
+			text-align: center;
+			padding: 20px;
+			width: 5%;
+		}
+		.item .delItem{
+			text-align: center;
+			padding: 20px;
+			width: 10%;
+			border-left: 1px solid #bbbbbb;
+		}
+		.addItem{
+			margin-top: 30px;
+			width: 100%;
+		}
+		.addItem textarea{
+			width: calc(100% - 20px);
+			max-width: 780px;
+			padding: 10px;
+		}
+		.addItem button{
+			display: block;
+			margin-top: 10px;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 5px;
+		}
+   </style>
+ </head>
+ <body>
+			<div id="app">
+				<p>Реализуйте чеклист. Должна быть textarea с добавлением задачи, а над ним - список с задачами. 
+				Возле каждой задачи чекбос. Если нажать на чекбокс - задача становится выполненной, 
+				перечеркивается и становится зеленого цвета, чекбокс при этом становится неактивным. 
+				Справа от любой задачи должна быть ссылка для удаления этой задачи.</p>
+				<p>Пусть новая задача добавляется по нажатию на кнопку или enter. При этом если textarea пустая, кнопка неактивна. 
+				Так же задача не должна добавляться, когда в textarea только пробелы, переносы.</p>
+				<p>Задачу также можно поредактировать, если сделать двойной клик по 
+				ней - в этом случае вместо пункта списка появляется textarea с текстом задачи, 
+				можно поредактировать текст задачи, нажать Enter и задача изменится. Инпут при этом исчезнет.</p>
+				</p>
+				<br>
+				<div class="item" v-bind:style="item.done ? { backgroundColor: '#a5eba3' } : { backgroundColor: '#fafafa' }" v-for="item, index in items">
+					<div class="text" v-on:dblclick="item.edit = true">
+						<p v-if="!item.edit" v-bind:style="item.done ? { textDecoration: 'line-through' } : { textDecoration: 'none' }">{{ item.text }}</p>
+						<p v-if="item.edit"><textarea v-model="item.newText" v-on:keyup.enter="saveItem(index)" v-on:keyup.esc="cancelEdit(index)"></textarea></p>
+						<p class="note" v-if="item.edit">Сохранить - enter, отмена - esc</p>
+					</div>
+					<div class="checkbox"><input type="checkbox" v-bind:disabled="item.done" v-model="item.done"></div>
+					<div class="delItem"><a v-on:click.prevent="delItem(index)" href="#">удалить</a></div>
+				</div>
+				<div class="addItem">
+					<textarea v-on:keyup.enter="addItem" v-model="newText"></textarea><br>
+					<button v-on:click="addItem" v-bind:disabled="newText == ''">Добавить задачу</button>
+				</div>
+			</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	   <script>
+		let app = new Vue({
+			el: '#app',
+			data: {
+				newText: "",
+				items: [
+					{text: 'Решить задачу 1', done: true, edit: false, newText: 'Решить задачу 1'},
+					{text: 'Решить задачу 2', done: false, edit: false, newText: 'Решить задачу 2'},
+					{text: 'Решить задачу 3', done: false, edit: false, newText: 'Решить задачу 3'},
+					{text: 'Изучить компоненты', done: false, edit: false, newText: 'Изучить компоненты'},
+				],
+			},
+			methods: {
+				delItem: function(index){
+					this.items.splice(index, 1);
+				},
+				saveItem: function(index){
+					this.items[index].text = this.items[index].newText;
+					this.items[index].edit = false;
+				},
+				cancelEdit: function(index){
+					this.items[index].newText = this.items[index].text;
+					this.items[index].edit = false;
+				},
+				addItem: function(){
+					if(this.newText.match(/^\s*$/) == null){
+						item = {
+							text: this.newText,
+							done: false,
+							edit: false,
+							newText: this.newText,
+						}
+						this.items.push(item);
+						this.newText = "";
+					}
+				},
+			},
+		});
+   </script>
+   
+ </body> 
+</html>
